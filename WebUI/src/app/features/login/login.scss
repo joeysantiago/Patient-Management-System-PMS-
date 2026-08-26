@@ -1,0 +1,85 @@
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #f4f6f8;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.login-card {
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+
+  h1 {
+    margin: 0 0 0.25rem;
+    font-size: 1.4rem;
+    color: #1a2b3c;
+  }
+
+  .subtitle {
+    margin: 0 0 1.5rem;
+    color: #6b7885;
+    font-size: 0.9rem;
+  }
+
+  label {
+    margin-bottom: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1a2b3c;
+  }
+
+  input {
+    margin-bottom: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #d3d9df;
+    border-radius: 4px;
+    font-size: 0.95rem;
+
+    &:focus {
+      outline: none;
+      border-color: #2f6fed;
+    }
+  }
+
+  .field-error {
+    margin: -0.5rem 0 0.75rem;
+    color: #c0392b;
+    font-size: 0.8rem;
+  }
+
+  .form-error {
+    margin: 0 0 1rem;
+    padding: 0.5rem 0.75rem;
+    background: #fdecea;
+    color: #c0392b;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+
+  button {
+    padding: 0.65rem;
+    border: none;
+    border-radius: 4px;
+    background: #2f6fed;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+      background: #94b3f5;
+      cursor: not-allowed;
+    }
+
+    &:not(:disabled):hover {
+      background: #2559c9;
+    }
+  }
+}
