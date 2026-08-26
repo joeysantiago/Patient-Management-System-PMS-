@@ -1,0 +1,20 @@
+# ---- Node / Angular (WebUI) ----
+WebUI/node_modules/
+WebUI/dist/
+WebUI/.angular/
+WebUI/npm-debug.log*
+WebUI/coverage/
+WebUI/.env
+WebUI/.vscode/
+
+# ---- .NET (WebAPI) ----
+WebAPI/**/bin/
+WebAPI/**/obj/
+WebAPI/**/*.user
+WebAPI/**/appsettings.Development.json
+WebAPI/.vs/
+
+# ---- General ----
+.DS_Store
+*.log
+.idea/
