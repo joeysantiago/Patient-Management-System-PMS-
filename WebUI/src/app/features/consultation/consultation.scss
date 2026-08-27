@@ -1,0 +1,31 @@
+/* Page layout comes from the shared .page / .page-header / .empty-state / .back-link utilities. */
+
+h3 {
+  font-size: 1rem;
+  margin: 1.5rem 0 0.75rem;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.vitals-warning {
+  margin: -0.5rem 0 1.1rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--color-warning-tint);
+  color: var(--color-warning);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+}
+
+.medication-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.medication-row {
+  padding: 1.1rem;
+  background: var(--color-bg-alt);
+}

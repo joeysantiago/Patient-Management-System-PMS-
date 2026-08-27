@@ -1,0 +1,80 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <span class="page-eyebrow">Patients</span>
+      <h1>Patient records</h1>
+      <p>Search, browse and manage every patient in one place.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn btn-secondary" (click)="exportCsv()" [disabled]="isExporting()">
+        {{ isExporting() ? 'Exporting…' : 'Export CSV' }}
+      </button>
+      <a routerLink="/patients/new" class="btn btn-primary">+ Add Patient</a>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input
+      type="search"
+      [formControl]="searchControl"
+      placeholder="Search by name or phone number…"
+      aria-label="Search patients"
+    />
+  </div>
+
+  @if (errorMessage()) {
+    <div class="form-error">{{ errorMessage() }}</div>
+  }
+
+  @if (isLoading()) {
+    <div class="empty-state">
+      <span class="empty-state-icon">⏳</span>
+      <p>
+        <strong>Loading patients…</strong>
+      </p>
+    </div>
+  } @else if (patients().length === 0) {
+    <div class="empty-state">
+      <span class="empty-state-icon">🧑‍⚕️</span>
+      <p>
+        @if (searchControl.value) {
+          <strong>No matches for "{{ searchControl.value }}"</strong>
+          Try a different name or phone number.
+        } @else {
+          <strong>No patients yet</strong>
+          Add your first patient to get started.
+        }
+      </p>
+    </div>
+  } @else {
+    <div class="card data-table-card">
+      <table class="data-table patient-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (patient of patients(); track patient.id) {
+            <tr>
+              <td class="patient-name">{{ patient.fullName }}</td>
+              <td>{{ patient.age }}</td>
+              <td>{{ patient.gender }}</td>
+              <td>{{ patient.phoneNumber }}</td>
+              <td class="patient-address">{{ patient.address || '—' }}</td>
+              <td class="patient-actions">
+                <a [routerLink]="['/patients', patient.id, 'edit']" class="btn btn-secondary btn-sm">Edit</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

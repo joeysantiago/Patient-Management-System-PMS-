@@ -1,0 +1,101 @@
+.prescription-sheet {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.prescription-header {
+  border-bottom: 2px solid var(--color-border-strong);
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+
+  h2 {
+    font-size: 1.35rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .doctor-line {
+    font-family: var(--font-display);
+    font-weight: 600;
+    margin: 0 0 0.2rem;
+  }
+
+  .clinic-contact {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+  }
+}
+
+.prescription-patient {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  .detail-label {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .detail-value {
+    display: block;
+    font-size: 0.95rem;
+  }
+}
+
+.prescription-vitals {
+  display: flex;
+  gap: 1.25rem;
+  padding: 0.65rem 0;
+  margin-bottom: 1.25rem;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.prescription-section {
+  margin-bottom: 1.25rem;
+
+  h3 {
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.prescription-medications {
+  margin-top: 0.5rem;
+}
+
+.prescription-footer {
+  margin-top: 2.5rem;
+  text-align: right;
+
+  p {
+    margin: 0 0 2.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+  }
+
+  .signature-line {
+    width: 200px;
+    margin-left: auto;
+    border-top: 1px solid var(--color-text-soft);
+  }
+}
+
+@media print {
+  .prescription-sheet {
+    box-shadow: none;
+    border: none;
+  }
+}

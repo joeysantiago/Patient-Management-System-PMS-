@@ -1,0 +1,85 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <span class="page-eyebrow">Appointments</span>
+      <h1>{{ isEditMode ? 'Edit Appointment' : 'Schedule Appointment' }}</h1>
+      <p>
+        {{
+          isEditMode
+            ? 'Update the date, time or status of this appointment.'
+            : 'Link this appointment to an existing patient.'
+        }}
+      </p>
+    </div>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="form-error">{{ errorMessage() }}</div>
+  }
+
+  @if (isLoadingPatients() || isLoadingAppointment()) {
+    <div class="empty-state">
+      <span class="empty-state-icon">⏳</span>
+      <p><strong>Loading…</strong></p>
+    </div>
+  } @else if (patients().length === 0) {
+    <div class="empty-state">
+      <span class="empty-state-icon">🧑‍⚕️</span>
+      <p>
+        <strong>No patients yet</strong>
+        Add a patient first, then come back to schedule an appointment.
+      </p>
+    </div>
+    <a routerLink="/patients/new" class="btn btn-primary" style="margin-top: 1rem">+ Add Patient</a>
+  } @else {
+    <form class="card appointment-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="form-row">
+        <label for="patientId">Patient</label>
+        <select id="patientId" formControlName="patientId">
+          <option value="" disabled>Select a patient…</option>
+          @for (patient of patients(); track patient.id) {
+            <option [value]="patient.id">{{ patient.fullName }} — {{ patient.phoneNumber }}</option>
+          }
+        </select>
+        @if (form.controls.patientId.invalid && form.controls.patientId.touched) {
+          <p class="field-error">Please select a patient.</p>
+        }
+      </div>
+
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="scheduledAt">Date &amp; time</label>
+          <input id="scheduledAt" type="datetime-local" formControlName="scheduledAt" />
+          @if (form.controls.scheduledAt.invalid && form.controls.scheduledAt.touched) {
+            <p class="field-error">Please choose a date and time.</p>
+          }
+        </div>
+
+        @if (isEditMode) {
+          <div class="form-row">
+            <label for="status">Status</label>
+            <select id="status" formControlName="status">
+              @for (option of statusOptions; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          </div>
+        }
+      </div>
+
+      <div class="form-row">
+        <label for="notes">Notes <span class="optional">(optional)</span></label>
+        <textarea id="notes" formControlName="notes" rows="3" placeholder="Reason for visit, reminders…"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <a routerLink="/appointments" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Saving…' : isEditMode ? 'Save Changes' : 'Schedule Appointment' }}
+        </button>
+      </div>
+    </form>
+  }
+
+  <a routerLink="/appointments" class="back-link">Back to Appointments</a>
+</div>

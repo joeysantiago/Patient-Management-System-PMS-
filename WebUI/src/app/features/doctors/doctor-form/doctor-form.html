@@ -1,0 +1,83 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <span class="page-eyebrow">Doctors</span>
+      <h1>{{ isEditMode ? 'Edit Doctor' : 'Add Doctor' }}</h1>
+      <p>{{ isEditMode ? "Update this doctor's details." : 'Register a new doctor profile.' }}</p>
+    </div>
+  </div>
+
+  @if (isLoadingDoctor()) {
+    <div class="empty-state">
+      <span class="empty-state-icon">⏳</span>
+      <p><strong>Loading doctor…</strong></p>
+    </div>
+  } @else {
+    <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="form-row">
+        <label for="fullName">Full name</label>
+        <input id="fullName" type="text" formControlName="fullName" placeholder="Jane Doe" autocomplete="name" />
+        @if (form.controls.fullName.invalid && form.controls.fullName.touched) {
+          <p class="field-error">Enter a valid name (at least 2 characters).</p>
+        }
+      </div>
+
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="specialization">Specialization</label>
+          <input id="specialization" type="text" formControlName="specialization" placeholder="General Physician" />
+          @if (form.controls.specialization.invalid && form.controls.specialization.touched) {
+            <p class="field-error">Specialization is required.</p>
+          }
+        </div>
+
+        <div class="form-row">
+          <label for="registrationNumber">Registration No. <span class="optional">(optional)</span></label>
+          <input id="registrationNumber" type="text" formControlName="registrationNumber" />
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="phoneNumber">Phone number</label>
+          <input
+            id="phoneNumber"
+            type="tel"
+            formControlName="phoneNumber"
+            placeholder="+1 555 123 4567"
+            autocomplete="tel"
+          />
+          @if (form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched) {
+            <p class="field-error">Enter a valid phone number.</p>
+          }
+        </div>
+
+        <div class="form-row">
+          <label for="email">Email <span class="optional">(optional)</span></label>
+          <input id="email" type="email" formControlName="email" placeholder="doctor@clinic.com" />
+          @if (form.controls.email.invalid && form.controls.email.touched) {
+            <p class="field-error">Enter a valid email address.</p>
+          }
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="clinicAddress">Clinic address <span class="optional">(optional)</span></label>
+        <input id="clinicAddress" type="text" formControlName="clinicAddress" placeholder="123 Main St, Springfield" />
+      </div>
+
+      @if (errorMessage()) {
+        <p class="form-error">{{ errorMessage() }}</p>
+      }
+
+      <div class="form-actions">
+        <a routerLink="/doctors" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Saving…' : isEditMode ? 'Save Changes' : 'Save Doctor' }}
+        </button>
+      </div>
+    </form>
+  }
+
+  <a routerLink="/doctors" class="back-link">Back to Doctors</a>
+</div>

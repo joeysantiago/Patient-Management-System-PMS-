@@ -1,0 +1,120 @@
+<div class="page">
+  <div class="page-header no-print">
+    <div>
+      <span class="page-eyebrow">Prescription</span>
+      <h1>Prescription</h1>
+      <p>Review and print the prescription for this consultation.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn btn-secondary" (click)="exportPdf()" [disabled]="isExportingPdf() || !prescription()">
+        {{ isExportingPdf() ? 'Exporting…' : 'Export PDF' }}
+      </button>
+      <button type="button" class="btn btn-primary" (click)="print()" [disabled]="!prescription()">Print</button>
+    </div>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="form-error no-print">{{ errorMessage() }}</div>
+  }
+
+  @if (isLoading()) {
+    <div class="empty-state no-print">
+      <span class="empty-state-icon">⏳</span>
+      <p><strong>Loading…</strong></p>
+    </div>
+  } @else if (prescription()) {
+    @let rx = prescription()!;
+    <div class="card prescription-sheet">
+      <div class="prescription-header">
+        <div>
+          <h2>{{ rx.clinic.clinicName }}</h2>
+          <p class="doctor-line">
+            {{ rx.clinic.doctorName }}
+            @if (rx.clinic.qualification) {
+              <span>&middot; {{ rx.clinic.qualification }}</span>
+            }
+            @if (rx.clinic.registrationNumber) {
+              <span>&middot; Reg. No. {{ rx.clinic.registrationNumber }}</span>
+            }
+          </p>
+          @if (rx.clinic.address || rx.clinic.phone) {
+            <p class="clinic-contact">
+              {{ rx.clinic.address }}
+              @if (rx.clinic.phone) {
+                <span>&middot; {{ rx.clinic.phone }}</span>
+              }
+            </p>
+          }
+        </div>
+      </div>
+
+      <div class="prescription-patient">
+        <div>
+          <span class="detail-label">Patient</span>
+          <span class="detail-value">{{ rx.patient.fullName }} ({{ rx.patient.age }} yrs, {{ rx.patient.gender }})</span>
+        </div>
+        <div>
+          <span class="detail-label">Phone</span>
+          <span class="detail-value">{{ rx.patient.phoneNumber }}</span>
+        </div>
+        <div>
+          <span class="detail-label">Visit date</span>
+          <span class="detail-value">{{ rx.visit.visitDateUtc | date: 'MMM d, y, h:mm a' }}</span>
+        </div>
+      </div>
+
+      <div class="prescription-vitals">
+        <span>Temp: {{ rx.visit.vitals.temperatureCelsius }}&deg;C</span>
+        <span>BP: {{ rx.visit.vitals.bloodPressureSystolic }}/{{ rx.visit.vitals.bloodPressureDiastolic }} mmHg</span>
+        <span>Pulse: {{ rx.visit.vitals.pulseBpm }} bpm</span>
+      </div>
+
+      <div class="prescription-section">
+        <h3>Complaints</h3>
+        <p>{{ rx.visit.complaints }}</p>
+      </div>
+
+      <div class="prescription-section">
+        <h3>Diagnosis</h3>
+        <p>{{ rx.visit.diagnosis }}</p>
+      </div>
+
+      <div class="prescription-section">
+        <h3>Rx &mdash; Medications</h3>
+        @if (rx.visit.medications.length) {
+          <table class="data-table prescription-medications">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Dosage</th>
+                <th>Frequency</th>
+                <th>Duration</th>
+                <th>Instructions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (medication of rx.visit.medications; track $index) {
+                <tr>
+                  <td>{{ medication.name }}</td>
+                  <td>{{ medication.dosage }}</td>
+                  <td>{{ medication.frequency }}</td>
+                  <td>{{ medication.duration }}</td>
+                  <td>{{ medication.instructions || '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p>No medications prescribed.</p>
+        }
+      </div>
+
+      <div class="prescription-footer">
+        <p>{{ rx.clinic.footerNote || 'Signature' }}</p>
+        <div class="signature-line"></div>
+      </div>
+    </div>
+  }
+
+  <a routerLink="/appointments" class="back-link no-print">Back to Appointments</a>
+</div>

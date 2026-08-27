@@ -1,0 +1,149 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <span class="page-eyebrow">Visit History</span>
+      <h1>{{ history()?.patientName ?? 'Patient' }}</h1>
+      <p>Chronological visits for this patient.</p>
+    </div>
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="exportCsv()"
+      [disabled]="isExporting() || !history()?.visits?.length"
+    >
+      {{ isExporting() ? 'Exporting…' : 'Export CSV' }}
+    </button>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="form-error">{{ errorMessage() }}</div>
+  }
+
+  <form class="card filter-form" [formGroup]="filterForm" (ngSubmit)="applyFilter()" novalidate>
+    <div class="form-grid">
+      <div class="form-row">
+        <label for="from">From</label>
+        <input id="from" type="date" formControlName="from" />
+      </div>
+      <div class="form-row">
+        <label for="to">To</label>
+        <input id="to" type="date" formControlName="to" />
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary btn-sm" (click)="clearFilter()">Clear</button>
+      <button type="submit" class="btn btn-primary btn-sm">Apply Filter</button>
+    </div>
+  </form>
+
+  @if (isLoading()) {
+    <div class="empty-state">
+      <span class="empty-state-icon">⏳</span>
+      <p><strong>Loading…</strong></p>
+    </div>
+  } @else if (!history()?.visits?.length) {
+    <div class="empty-state">
+      <span class="empty-state-icon">🗂️</span>
+      <p>
+        <strong>No visits recorded</strong>
+        No visits match the current filter, or none have been recorded yet.
+      </p>
+    </div>
+  } @else {
+    <div class="visit-list">
+      @for (visit of history()!.visits; track visit.id) {
+        <div class="card visit-card">
+          <div class="visit-card-header" (click)="toggleExpand(visit.id)">
+            <div>
+              <strong>{{ visit.visitDateUtc | date: 'MMM d, y, h:mm a' }}</strong>
+              <p class="visit-summary">{{ visit.diagnosis }}</p>
+            </div>
+            <div class="visit-card-meta">
+              @if (visit.vitalsOutOfRange) {
+                <span class="badge badge-warning">BP out of range</span>
+              }
+              <span class="expand-icon">{{ expandedVisitId() === visit.id ? '▲' : '▼' }}</span>
+            </div>
+          </div>
+
+          @if (expandedVisitId() === visit.id) {
+            <div class="visit-detail">
+              <div class="detail-section">
+                <h4>Vitals</h4>
+                <div class="data-table-card card">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Temperature</th>
+                        <th>BP</th>
+                        <th>Pulse</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{{ visit.vitals.temperatureCelsius }}&deg;C</td>
+                        <td>{{ visit.vitals.bloodPressureSystolic }}/{{ visit.vitals.bloodPressureDiastolic }} mmHg</td>
+                        <td>{{ visit.vitals.pulseBpm }} bpm</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                @if (visit.vitalsWarning) {
+                  <p class="vitals-warning">⚠️ {{ visit.vitalsWarning }}</p>
+                }
+              </div>
+
+              <div class="detail-section">
+                <h4>Complaints</h4>
+                <p>{{ visit.complaints }}</p>
+              </div>
+
+              <div class="detail-section">
+                <h4>Diagnosis</h4>
+                <p>{{ visit.diagnosis }}</p>
+              </div>
+
+              @if (visit.medications.length) {
+                <div class="detail-section">
+                  <h4>Medications</h4>
+                  <div class="data-table-card card">
+                    <table class="data-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Dosage</th>
+                          <th>Frequency</th>
+                          <th>Duration</th>
+                          <th>Instructions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (medication of visit.medications; track $index) {
+                          <tr>
+                            <td>{{ medication.name }}</td>
+                            <td>{{ medication.dosage }}</td>
+                            <td>{{ medication.frequency }}</td>
+                            <td>{{ medication.duration }}</td>
+                            <td>{{ medication.instructions || '—' }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              }
+
+              <div class="detail-section">
+                <a [routerLink]="['/appointments', visit.appointmentId, 'prescription']" class="btn btn-secondary btn-sm"
+                  >Print Prescription</a
+                >
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <a [routerLink]="['/patients', patientId]" class="back-link">Back to Patient</a>
+</div>

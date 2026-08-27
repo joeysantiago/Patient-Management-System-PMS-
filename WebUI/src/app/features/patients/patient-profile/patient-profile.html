@@ -1,0 +1,83 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <span class="page-eyebrow">Patient Profile</span>
+      <h1>{{ patient()?.fullName ?? 'Patient' }}</h1>
+      <p>Overview, vitals and history for this patient.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn btn-secondary" (click)="exportPdf()" [disabled]="isExportingPdf() || !patient()">
+        {{ isExportingPdf() ? 'Exporting…' : 'Export PDF' }}
+      </button>
+      <a [routerLink]="['/patients', patientId, 'edit']" class="btn btn-secondary">Edit</a>
+      <a [routerLink]="['/patients', patientId, 'history']" class="btn btn-primary">Visit History</a>
+    </div>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="form-error">{{ errorMessage() }}</div>
+  }
+
+  @if (isLoading()) {
+    <div class="empty-state">
+      <span class="empty-state-icon">⏳</span>
+      <p><strong>Loading patient…</strong></p>
+    </div>
+  } @else if (patient()) {
+    <div class="card profile-details">
+      <div class="detail-item">
+        <span class="detail-label">Full name</span>
+        <span class="detail-value">{{ patient()!.fullName }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Date of birth</span>
+        <span class="detail-value">{{ patient()!.dateOfBirth | date: 'MMM d, y' }} ({{ patient()!.age }} yrs)</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Gender</span>
+        <span class="detail-value">{{ patient()!.gender }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Phone</span>
+        <span class="detail-value">{{ patient()!.phoneNumber }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Address</span>
+        <span class="detail-value">{{ patient()!.address || '—' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Registered on</span>
+        <span class="detail-value">{{ patient()!.createdAtUtc | date: 'MMM d, y' }}</span>
+      </div>
+    </div>
+
+    @if (history() && history()!.visits.length > 0) {
+      <div class="card latest-visit">
+        <div class="latest-visit-header">
+          <h3>Latest Visit</h3>
+          <a [routerLink]="['/patients', patientId, 'history']" class="btn btn-secondary btn-sm">View full history</a>
+        </div>
+        @let latest = history()!.visits[0];
+        <div class="latest-visit-body">
+          <span class="latest-visit-date">{{ latest.visitDateUtc | date: 'MMM d, y, h:mm a' }}</span>
+          <div class="vitals-row">
+            <span>{{ latest.vitals.temperatureCelsius }}&deg;C</span>
+            <span>{{ latest.vitals.bloodPressureSystolic }}/{{ latest.vitals.bloodPressureDiastolic }} mmHg</span>
+            <span>{{ latest.vitals.pulseBpm }} bpm</span>
+          </div>
+          <p class="latest-visit-diagnosis">{{ latest.diagnosis }}</p>
+        </div>
+      </div>
+    } @else if (history()) {
+      <div class="empty-state">
+        <span class="empty-state-icon">🗂️</span>
+        <p>
+          <strong>No visits recorded yet</strong>
+          Once a consultation is completed, it will show up here.
+        </p>
+      </div>
+    }
+  }
+
+  <a routerLink="/patients" class="back-link">Back to Patients</a>
+</div>

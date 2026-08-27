@@ -1,0 +1,86 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <span class="page-eyebrow">Reports</span>
+      <h1>Export visit data</h1>
+      <p>Filter visits by date range and patient name, then export the results as CSV.</p>
+    </div>
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="exportCsv()"
+      [disabled]="isExporting() || results().length === 0"
+    >
+      {{ isExporting() ? 'Exporting…' : 'Export CSV' }}
+    </button>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="form-error">{{ errorMessage() }}</div>
+  }
+
+  <form class="card filter-form" [formGroup]="filterForm" (ngSubmit)="search()" novalidate>
+    <div class="form-grid">
+      <div class="form-row">
+        <label for="from">From</label>
+        <input id="from" type="date" formControlName="from" />
+      </div>
+      <div class="form-row">
+        <label for="to">To</label>
+        <input id="to" type="date" formControlName="to" />
+      </div>
+      <div class="form-row">
+        <label for="patientName">Patient name</label>
+        <input id="patientName" type="text" formControlName="patientName" placeholder="Search by name…" />
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary btn-sm" (click)="clearFilter()">Clear</button>
+      <button type="submit" class="btn btn-primary btn-sm">Search</button>
+    </div>
+  </form>
+
+  @if (isLoading()) {
+    <div class="empty-state">
+      <span class="empty-state-icon">⏳</span>
+      <p><strong>Loading…</strong></p>
+    </div>
+  } @else if (results().length === 0) {
+    <div class="empty-state">
+      <span class="empty-state-icon">📊</span>
+      <p>
+        <strong>No visits match this filter</strong>
+        Try widening the date range or clearing the patient name.
+      </p>
+    </div>
+  } @else {
+    <div class="card data-table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Visit date</th>
+            <th>Diagnosis</th>
+            <th>Vitals</th>
+            <th>Medications</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of results(); track item.visitId) {
+            <tr>
+              <td class="patient-name">{{ item.patientName }}</td>
+              <td>{{ item.visitDateUtc | date: 'MMM d, y, h:mm a' }}</td>
+              <td class="diagnosis-cell">{{ item.diagnosis }}</td>
+              <td>
+                {{ item.vitals.temperatureCelsius }}&deg;C ·
+                {{ item.vitals.bloodPressureSystolic }}/{{ item.vitals.bloodPressureDiastolic }} ·
+                {{ item.vitals.pulseBpm }} bpm
+              </td>
+              <td>{{ item.medications.length ? item.medications.length + ' item(s)' : '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

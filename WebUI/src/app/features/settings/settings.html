@@ -1,0 +1,172 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <span class="page-eyebrow">Settings</span>
+      <h1>Clinic Settings</h1>
+      <p>Configure the clinic and doctor details used on printed prescriptions.</p>
+    </div>
+  </div>
+
+  @if (clinicErrorMessage()) {
+    <div class="form-error">{{ clinicErrorMessage() }}</div>
+  }
+  @if (clinicSuccessMessage()) {
+    <div class="form-success">{{ clinicSuccessMessage() }}</div>
+  }
+
+  @if (isLoadingClinic()) {
+    <div class="empty-state">
+      <span class="empty-state-icon">⏳</span>
+      <p><strong>Loading…</strong></p>
+    </div>
+  } @else {
+    <form class="card" [formGroup]="clinicForm" (ngSubmit)="saveClinicSettings()" novalidate>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="clinicName">Clinic name</label>
+          <input id="clinicName" type="text" formControlName="clinicName" placeholder="Sunrise Clinic" />
+          @if (clinicForm.controls.clinicName.invalid && clinicForm.controls.clinicName.touched) {
+            <p class="field-error">Clinic name is required.</p>
+          }
+        </div>
+        <div class="form-row">
+          <label for="doctorName">Doctor name</label>
+          <input id="doctorName" type="text" formControlName="doctorName" placeholder="Dr. John Doe" />
+          @if (clinicForm.controls.doctorName.invalid && clinicForm.controls.doctorName.touched) {
+            <p class="field-error">Doctor name is required.</p>
+          }
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="registrationNumber">Registration No. <span class="optional">(optional)</span></label>
+          <input id="registrationNumber" type="text" formControlName="registrationNumber" />
+        </div>
+        <div class="form-row">
+          <label for="qualification">Qualification <span class="optional">(optional)</span></label>
+          <input id="qualification" type="text" formControlName="qualification" placeholder="MBBS, MD" />
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="phone">Phone <span class="optional">(optional)</span></label>
+          <input id="phone" type="tel" formControlName="phone" />
+        </div>
+        <div class="form-row">
+          <label for="address">Clinic address <span class="optional">(optional)</span></label>
+          <input id="address" type="text" formControlName="address" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="footerNote">Footer note <span class="optional">(optional)</span></label>
+        <input id="footerNote" type="text" formControlName="footerNote" placeholder="e.g. Signature" />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="isSavingClinic()">
+          {{ isSavingClinic() ? 'Saving…' : 'Save Clinic Settings' }}
+        </button>
+      </div>
+    </form>
+  }
+
+  <div class="page-header section-header">
+    <div>
+      <h2>Change Password</h2>
+      <p>Update the password used to sign in.</p>
+    </div>
+  </div>
+
+  @if (passwordErrorMessage()) {
+    <div class="form-error">{{ passwordErrorMessage() }}</div>
+  }
+  @if (passwordSuccessMessage()) {
+    <div class="form-success">{{ passwordSuccessMessage() }}</div>
+  }
+
+  <form class="card" [formGroup]="passwordForm" (ngSubmit)="changePassword()" novalidate>
+    <div class="form-row">
+      <label for="currentPassword">Current password</label>
+      <input id="currentPassword" type="password" formControlName="currentPassword" autocomplete="current-password" />
+      @if (passwordForm.controls.currentPassword.invalid && passwordForm.controls.currentPassword.touched) {
+        <p class="field-error">Current password is required.</p>
+      }
+    </div>
+
+    <div class="form-grid">
+      <div class="form-row">
+        <label for="newPassword">New password</label>
+        <input id="newPassword" type="password" formControlName="newPassword" autocomplete="new-password" />
+        @if (passwordForm.controls.newPassword.invalid && passwordForm.controls.newPassword.touched) {
+          <p class="field-error">At least 8 characters.</p>
+        }
+      </div>
+      <div class="form-row">
+        <label for="confirmPassword">Confirm new password</label>
+        <input id="confirmPassword" type="password" formControlName="confirmPassword" autocomplete="new-password" />
+        @if (passwordForm.controls.confirmPassword.invalid && passwordForm.controls.confirmPassword.touched) {
+          <p class="field-error">Please confirm the new password.</p>
+        }
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="isChangingPassword()">
+        {{ isChangingPassword() ? 'Saving…' : 'Change Password' }}
+      </button>
+    </div>
+  </form>
+
+  <div class="page-header section-header">
+    <div>
+      <h2>Backups</h2>
+      <p>Automated backups run on a schedule. You can also trigger one manually.</p>
+    </div>
+    <button type="button" class="btn btn-secondary" (click)="runBackupNow()" [disabled]="isRunningBackup()">
+      {{ isRunningBackup() ? 'Running…' : 'Run Backup Now' }}
+    </button>
+  </div>
+
+  @if (backupErrorMessage()) {
+    <div class="form-error">{{ backupErrorMessage() }}</div>
+  }
+
+  @if (isLoadingBackups()) {
+    <div class="empty-state">
+      <span class="empty-state-icon">⏳</span>
+      <p><strong>Loading…</strong></p>
+    </div>
+  } @else if (backups().length === 0) {
+    <div class="empty-state">
+      <span class="empty-state-icon">🗄️</span>
+      <p>
+        <strong>No backups yet</strong>
+        A backup will be created automatically, or run one now.
+      </p>
+    </div>
+  } @else {
+    <div class="card data-table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Size</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (backup of backups(); track backup.fileName) {
+            <tr>
+              <td>{{ backup.fileName }}</td>
+              <td>{{ (backup.sizeBytes / 1024) | number: '1.0-1' }} KB</td>
+              <td>{{ backup.createdAtUtc | date: 'MMM d, y, h:mm a' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

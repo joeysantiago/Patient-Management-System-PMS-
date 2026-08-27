@@ -1,0 +1,12 @@
+.patient-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.diagnosis-cell {
+  color: var(--color-text-muted);
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

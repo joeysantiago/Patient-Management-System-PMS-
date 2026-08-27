@@ -1,0 +1,90 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <span class="page-eyebrow">Appointments</span>
+      <h1>Appointments</h1>
+      <p>Keep track of upcoming and completed visits.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn btn-secondary" (click)="exportCsv()" [disabled]="isExporting()">
+        {{ isExporting() ? 'Exporting…' : 'Export CSV' }}
+      </button>
+      <a routerLink="/appointments/new" class="btn btn-primary">+ Schedule Appointment</a>
+    </div>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="form-error">{{ errorMessage() }}</div>
+  }
+
+  <form class="card filter-form" [formGroup]="filterForm" (ngSubmit)="applyFilter()" novalidate>
+    <div class="form-row">
+      <label for="date">Date</label>
+      <input id="date" type="date" formControlName="date" />
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary btn-sm" (click)="clearFilter()">Clear</button>
+      <button type="submit" class="btn btn-primary btn-sm">Apply Filter</button>
+    </div>
+  </form>
+
+  @if (isLoading()) {
+    <div class="empty-state">
+      <span class="empty-state-icon">⏳</span>
+      <p><strong>Loading appointments…</strong></p>
+    </div>
+  } @else if (appointments().length === 0) {
+    <div class="empty-state">
+      <span class="empty-state-icon">📅</span>
+      <p>
+        <strong>No appointments yet</strong>
+        Schedule your first appointment to get started.
+      </p>
+    </div>
+  } @else {
+    <div class="card data-table-card">
+      <table class="data-table appointment-table">
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Date &amp; time</th>
+            <th>Status</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (appointment of appointments(); track appointment.id) {
+            <tr>
+              <td class="patient-name">
+                {{ appointment.patientName }}
+                <span class="patient-phone">{{ appointment.patientPhoneNumber }}</span>
+              </td>
+              <td>{{ appointment.scheduledAt | date: 'MMM d, y, h:mm a' }}</td>
+              <td>
+                <span class="status-badge" [class]="statusClass(appointment.status)">
+                  {{ statusLabels[appointment.status] }}
+                </span>
+              </td>
+              <td class="appointment-notes">{{ appointment.notes || '—' }}</td>
+              <td class="appointment-actions">
+                @if (appointment.status === AppointmentStatus.Scheduled) {
+                  <a [routerLink]="['/appointments', appointment.id, 'consultation']" class="btn btn-primary btn-sm"
+                    >Consult</a
+                  >
+                } @else if (appointment.status === AppointmentStatus.Completed) {
+                  <a
+                    [routerLink]="['/appointments', appointment.id, 'prescription']"
+                    class="btn btn-secondary btn-sm"
+                    >Prescription</a
+                  >
+                }
+                <a [routerLink]="['/appointments', appointment.id, 'edit']" class="btn btn-secondary btn-sm">Edit</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

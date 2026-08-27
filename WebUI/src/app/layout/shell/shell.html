@@ -1,0 +1,46 @@
+<div class="shell">
+  <nav class="shell-nav no-print">
+    <span class="brand"><span class="brand-mark">+</span> Patient Management</span>
+    <div class="nav-links">
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/patients" routerLinkActive="active">Patients</a>
+      <a routerLink="/appointments" routerLinkActive="active">Appointments</a>
+      <a routerLink="/doctors" routerLinkActive="active">Doctors</a>
+      <a routerLink="/reports" routerLinkActive="active">Reports</a>
+      <a routerLink="/settings" routerLinkActive="active">Settings</a>
+    </div>
+    <div class="global-search">
+      <input
+        type="search"
+        [formControl]="searchControl"
+        placeholder="Search patients by name or phone…"
+        aria-label="Search patients"
+        (focus)="searchControl.value && showResults.set(true)"
+        (blur)="closeResults()"
+      />
+      @if (showResults()) {
+        <div class="global-search-results">
+          @if (searchResults().length === 0) {
+            <div class="global-search-empty">No matches</div>
+          } @else {
+            @for (patient of searchResults(); track patient.id) {
+              <button type="button" class="global-search-result" (click)="selectPatient(patient)">
+                <span class="result-name">{{ patient.fullName }}</span>
+                <span class="result-phone">{{ patient.phoneNumber }}</span>
+              </button>
+            }
+          }
+        </div>
+      }
+    </div>
+    <span class="spacer"></span>
+    <span class="display-name">
+      <span class="avatar">{{ auth.displayName()?.charAt(0) ?? 'D' }}</span>
+      {{ auth.displayName() }}
+    </span>
+    <button type="button" class="btn btn-secondary" (click)="logout()">Sign out</button>
+  </nav>
+  <main class="shell-content">
+    <router-outlet />
+  </main>
+</div>

@@ -1,0 +1,10 @@
+.doctor-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.doctor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
