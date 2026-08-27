@@ -1,0 +1,59 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <span class="page-eyebrow">Doctors</span>
+      <h1>Doctor records</h1>
+      <p>Manage doctor profiles for this clinic.</p>
+    </div>
+    <a routerLink="/doctors/new" class="btn btn-primary">+ Add Doctor</a>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="form-error">{{ errorMessage() }}</div>
+  }
+
+  @if (isLoading()) {
+    <div class="empty-state">
+      <span class="empty-state-icon">⏳</span>
+      <p><strong>Loading doctors…</strong></p>
+    </div>
+  } @else if (doctors().length === 0) {
+    <div class="empty-state">
+      <span class="empty-state-icon">🩺</span>
+      <p>
+        <strong>No doctors yet</strong>
+        Add your first doctor profile to get started.
+      </p>
+    </div>
+  } @else {
+    <div class="card data-table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Specialization</th>
+            <th>Registration No.</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (doctor of doctors(); track doctor.id) {
+            <tr>
+              <td class="doctor-name">Dr. {{ doctor.fullName }}</td>
+              <td>{{ doctor.specialization }}</td>
+              <td>{{ doctor.registrationNumber || '—' }}</td>
+              <td>{{ doctor.phoneNumber }}</td>
+              <td>{{ doctor.email || '—' }}</td>
+              <td class="doctor-actions">
+                <a [routerLink]="['/doctors', doctor.id, 'edit']" class="btn btn-secondary btn-sm">Edit</a>
+                <button type="button" class="btn btn-sm btn-ghost" (click)="deleteDoctor(doctor)">Delete</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

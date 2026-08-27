@@ -3,6 +3,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
+import { ChangePasswordRequest } from './models/change-password-request.model';
 import { LoginRequest } from './models/login-request.model';
 import { LoginResponse } from './models/login-response.model';
 
@@ -45,5 +46,9 @@ export class Auth {
 
   getToken(): string | null {
     return this.tokenSignal();
+  }
+
+  changePassword(request: ChangePasswordRequest): Observable<void> {
+    return this.http.put<void>(`${environment.apiBaseUrl}/auth/password`, request);
   }
 }

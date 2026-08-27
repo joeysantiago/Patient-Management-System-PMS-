@@ -1,7 +1,158 @@
-<div class="dashboard-page">
-  <header>
-    <h1>Welcome, {{ auth.displayName() }}</h1>
-    <button type="button" (click)="logout()">Sign out</button>
-  </header>
-  <p>This is a placeholder dashboard. Patient management features land in later phases.</p>
+<div class="page dashboard-page">
+  <section class="dashboard-hero">
+    <div>
+      <span class="page-eyebrow">Dashboard</span>
+      <h1>Welcome back, {{ auth.displayName() }} 👋</h1>
+      <p>Here's a quick jumping-off point for today's work.</p>
+    </div>
+    <span class="dashboard-hero-icon">🌤️</span>
+  </section>
+
+  @if (errorMessage()) {
+    <div class="form-error">{{ errorMessage() }}</div>
+  }
+
+  @if (!isLoading() && summary()) {
+    <div class="stat-tiles">
+      <div class="card stat-tile">
+        <span class="stat-icon">🧑‍⚕️</span>
+        <div>
+          <span class="stat-value">{{ summary()!.newPatientsLast30Days }}</span>
+          <span class="stat-label">New patients (last 30 days)</span>
+        </div>
+      </div>
+      <div class="card stat-tile">
+        <span class="stat-icon">📅</span>
+        <div>
+          <span class="stat-value">{{ summary()!.todaysAppointmentCount }}</span>
+          <span class="stat-label">Today's appointments</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="quick-actions">
+    <a class="quick-action-card" routerLink="/patients">
+      <span class="quick-action-icon">🧑‍⚕️</span>
+      <div>
+        <h3>Patients</h3>
+        <p>Browse records and add new patients.</p>
+      </div>
+      <span class="quick-action-arrow">→</span>
+    </a>
+
+    <a class="quick-action-card" routerLink="/appointments">
+      <span class="quick-action-icon">📅</span>
+      <div>
+        <h3>Appointments</h3>
+        <p>Schedule or review today's visits.</p>
+      </div>
+      <span class="quick-action-arrow">→</span>
+    </a>
+
+    <a class="quick-action-card" routerLink="/patients/new">
+      <span class="quick-action-icon">➕</span>
+      <div>
+        <h3>Add Patient</h3>
+        <p>Register a new patient in seconds.</p>
+      </div>
+      <span class="quick-action-arrow">→</span>
+    </a>
+
+    <a class="quick-action-card" routerLink="/reports">
+      <span class="quick-action-icon">📊</span>
+      <div>
+        <h3>Reports</h3>
+        <p>Filter and export visit data.</p>
+      </div>
+      <span class="quick-action-arrow">→</span>
+    </a>
+  </div>
+
+  <div class="card todays-appointments">
+    <div class="todays-appointments-header">
+      <h2>Today's Appointments</h2>
+      <a routerLink="/appointments" class="btn btn-secondary btn-sm">View all</a>
+    </div>
+
+    @if (isLoading()) {
+      <div class="empty-state">
+        <span class="empty-state-icon">⏳</span>
+        <p><strong>Loading…</strong></p>
+      </div>
+    } @else if (!summary() || summary()!.todaysAppointments.length === 0) {
+      <div class="empty-state">
+        <span class="empty-state-icon">✨</span>
+        <p>
+          <strong>No appointments today</strong>
+          Enjoy the quiet, or schedule a new appointment.
+        </p>
+      </div>
+    } @else {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (appointment of summary()!.todaysAppointments; track appointment.id) {
+            <tr>
+              <td class="patient-name">
+                {{ appointment.patientName }}
+                <span class="patient-phone">{{ appointment.patientPhoneNumber }}</span>
+              </td>
+              <td>{{ appointment.scheduledAt | date: 'h:mm a' }}</td>
+              <td>{{ statusLabels[appointment.status] }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+  <div class="card recent-patients">
+    <div class="todays-appointments-header">
+      <h2>Recent Patients</h2>
+      <a routerLink="/patients" class="btn btn-secondary btn-sm">View all</a>
+    </div>
+
+    @if (isLoading()) {
+      <div class="empty-state">
+        <span class="empty-state-icon">⏳</span>
+        <p><strong>Loading…</strong></p>
+      </div>
+    } @else if (!summary() || summary()!.recentPatients.length === 0) {
+      <div class="empty-state">
+        <span class="empty-state-icon">🧑‍⚕️</span>
+        <p>
+          <strong>No patients yet</strong>
+          Register your first patient to see them here.
+        </p>
+      </div>
+    } @else {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Registered</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (patient of summary()!.recentPatients; track patient.id) {
+            <tr>
+              <td class="patient-name">
+                <a [routerLink]="['/patients', patient.id]">{{ patient.fullName }}</a>
+              </td>
+              <td>{{ patient.phoneNumber }}</td>
+              <td>{{ patient.createdAtUtc | date: 'MMM d, y' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
 </div>

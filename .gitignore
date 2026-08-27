@@ -13,8 +13,14 @@ WebAPI/**/obj/
 WebAPI/**/*.user
 WebAPI/**/appsettings.Development.json
 WebAPI/.vs/
+WebAPI/**/*.db
+WebAPI/**/*.db-shm
+WebAPI/**/*.db-wal
 
 # ---- General ----
 .DS_Store
 *.log
 .idea/
+
+# ---- Claude Code local settings ----
+.claude/settings.local.json

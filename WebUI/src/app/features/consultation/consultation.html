@@ -1,0 +1,133 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <span class="page-eyebrow">Consultation</span>
+      <h1>{{ appointment()?.patientName ?? 'Consultation' }}</h1>
+      <p>Vitals, complaints, diagnosis and prescription in one flow.</p>
+    </div>
+    <span class="badge">In progress</span>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="form-error">{{ errorMessage() }}</div>
+  }
+
+  @if (isLoading()) {
+    <div class="empty-state">
+      <span class="empty-state-icon">⏳</span>
+      <p><strong>Loading…</strong></p>
+    </div>
+  } @else {
+    <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <h3>Vitals</h3>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="temperatureCelsius">Temperature (&deg;C)</label>
+          <input id="temperatureCelsius" type="number" step="0.1" formControlName="temperatureCelsius" placeholder="e.g. 37.5" />
+          @if (form.controls.temperatureCelsius.invalid && form.controls.temperatureCelsius.touched) {
+            <p class="field-error">Please enter a valid temperature in &deg;C (30&ndash;45, e.g. 37.5).</p>
+          }
+        </div>
+
+        <div class="form-row">
+          <label for="bloodPressureSystolic">BP Systolic (mmHg)</label>
+          <input
+            id="bloodPressureSystolic"
+            type="number"
+            formControlName="bloodPressureSystolic"
+            (input)="checkBpRange()"
+          />
+          @if (form.controls.bloodPressureSystolic.invalid && form.controls.bloodPressureSystolic.touched) {
+            <p class="field-error">Required.</p>
+          }
+        </div>
+
+        <div class="form-row">
+          <label for="bloodPressureDiastolic">BP Diastolic (mmHg)</label>
+          <input
+            id="bloodPressureDiastolic"
+            type="number"
+            formControlName="bloodPressureDiastolic"
+            (input)="checkBpRange()"
+          />
+          @if (form.controls.bloodPressureDiastolic.invalid && form.controls.bloodPressureDiastolic.touched) {
+            <p class="field-error">Required.</p>
+          }
+        </div>
+
+        <div class="form-row">
+          <label for="pulseBpm">Pulse (bpm)</label>
+          <input id="pulseBpm" type="number" formControlName="pulseBpm" />
+          @if (form.controls.pulseBpm.invalid && form.controls.pulseBpm.touched) {
+            <p class="field-error">Required.</p>
+          }
+        </div>
+      </div>
+
+      @if (bpWarning()) {
+        <p class="vitals-warning">⚠️ {{ bpWarning() }}</p>
+      }
+
+      <h3>Complaints</h3>
+      <div class="form-row">
+        <label for="complaints">Symptoms</label>
+        <textarea id="complaints" formControlName="complaints" rows="3" placeholder="Patient's complaints…"></textarea>
+        @if (form.controls.complaints.invalid && form.controls.complaints.touched) {
+          <p class="field-error">Please record the patient's complaints.</p>
+        }
+      </div>
+
+      <h3>Diagnosis</h3>
+      <div class="form-row">
+        <label for="diagnosis">Notes</label>
+        <textarea id="diagnosis" formControlName="diagnosis" rows="3" placeholder="Diagnosis notes…"></textarea>
+        @if (form.controls.diagnosis.invalid && form.controls.diagnosis.touched) {
+          <p class="field-error">Please record a diagnosis.</p>
+        }
+      </div>
+
+      <h3>Medications</h3>
+      <div formArrayName="medications" class="medication-list">
+        @for (medication of medications.controls; track $index) {
+          <div class="medication-row card" [formGroupName]="$index">
+            <div class="form-grid">
+              <div class="form-row">
+                <label>Name</label>
+                <input type="text" formControlName="name" />
+              </div>
+              <div class="form-row">
+                <label>Dosage</label>
+                <input type="text" formControlName="dosage" placeholder="e.g. 500mg" />
+              </div>
+              <div class="form-row">
+                <label>Frequency</label>
+                <input type="text" formControlName="frequency" placeholder="e.g. Twice a day" />
+              </div>
+              <div class="form-row">
+                <label>Duration</label>
+                <input type="text" formControlName="duration" placeholder="e.g. 5 days" />
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Instructions <span class="optional">(optional)</span></label>
+              <input type="text" formControlName="instructions" placeholder="e.g. After food" />
+            </div>
+            <button type="button" class="btn btn-sm btn-ghost" (click)="removeMedication($index)">
+              Remove medication
+            </button>
+          </div>
+        }
+      </div>
+      <button type="button" class="btn btn-secondary btn-sm" (click)="addMedication()">+ Add Medication</button>
+
+      <div class="form-actions">
+        <a routerLink="/appointments" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Saving…' : 'Save Consultation' }}
+        </button>
+      </div>
+    </form>
+  }
+
+  <a routerLink="/appointments" class="back-link">Back to Appointments</a>
+</div>

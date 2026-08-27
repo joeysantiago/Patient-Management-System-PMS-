@@ -1,0 +1,81 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <span class="page-eyebrow">Patients</span>
+      <h1>{{ isEditMode ? 'Edit Patient' : 'Add Patient' }}</h1>
+      <p>{{ isEditMode ? "Update this patient's details." : 'Register a new patient record.' }}</p>
+    </div>
+  </div>
+
+  @if (isLoadingPatient()) {
+    <div class="empty-state">
+      <span class="empty-state-icon">⏳</span>
+      <p><strong>Loading patient…</strong></p>
+    </div>
+  } @else {
+    <form class="card patient-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="form-row">
+        <label for="fullName">Full name</label>
+        <input id="fullName" type="text" formControlName="fullName" placeholder="Jane Smith" autocomplete="name" />
+        @if (form.controls.fullName.invalid && form.controls.fullName.touched) {
+          <p class="field-error">Enter a valid name (at least 2 characters).</p>
+        }
+      </div>
+
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="dateOfBirth">Date of birth</label>
+          <input id="dateOfBirth" type="date" formControlName="dateOfBirth" />
+          @if (form.controls.dateOfBirth.invalid && form.controls.dateOfBirth.touched) {
+            <p class="field-error">Date of birth is required.</p>
+          }
+        </div>
+
+        <div class="form-row">
+          <label for="gender">Gender</label>
+          <select id="gender" formControlName="gender">
+            <option value="" disabled>Select…</option>
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Other">Other</option>
+          </select>
+          @if (form.controls.gender.invalid && form.controls.gender.touched) {
+            <p class="field-error">Please select a gender.</p>
+          }
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="phoneNumber">Phone number</label>
+        <input
+          id="phoneNumber"
+          type="tel"
+          formControlName="phoneNumber"
+          placeholder="+1 555 123 4567"
+          autocomplete="tel"
+        />
+        @if (form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched) {
+          <p class="field-error">Enter a valid phone number.</p>
+        }
+      </div>
+
+      <div class="form-row">
+        <label for="address">Address <span class="optional">(optional)</span></label>
+        <input id="address" type="text" formControlName="address" placeholder="123 Main St, Springfield" />
+      </div>
+
+      @if (errorMessage()) {
+        <p class="form-error">{{ errorMessage() }}</p>
+      }
+
+      <div class="form-actions">
+        <a routerLink="/patients" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Saving…' : isEditMode ? 'Save Changes' : 'Save Patient' }}
+        </button>
+      </div>
+    </form>
+  }
+
+  <a routerLink="/patients" class="back-link">Back to Patients</a>
+</div>
